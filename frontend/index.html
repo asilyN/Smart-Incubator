@@ -3,85 +3,112 @@
 <head>
   <meta charset="UTF-8">
   <title>Smart Egg Incubator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- A. Header -->
-  <header class="header">
-    <div class="brand">
-      <svg class="logo" viewBox="0 0 40 48"><path d="M20 2C11 2 3 18 3 29a17 17 0 0 0 34 0C37 18 29 2 20 2z" fill="#FFD54F" stroke="#FF9800" stroke-width="2.5"/><ellipse cx="14" cy="20" rx="3.5" ry="6" fill="#fff" opacity=".6" transform="rotate(20 14 20)"/></svg>
-      <div><h1>Smart Egg Incubator</h1><p>Monitoring &amp; Control Dashboard</p></div>
-    </div>
-    <div class="header-right">
-      <div class="clock" id="clock"></div>
-      <div class="pill" id="connPill"><span class="dot"></span><span id="connText">Connecting</span></div>
-    </div>
-  </header>
+  <!-- Icon set (Lucide-style SVG symbols) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+    <symbol id="i-therm" viewBox="0 0 24 24"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/></symbol>
+    <symbol id="i-egg" viewBox="0 0 24 24"><path d="M12 2C8 2 4 8 4 14a8 8 0 0 0 16 0c0-6-4-12-8-12"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+    <symbol id="i-trend" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  </defs></svg>
 
-  <main class="grid">
-    <!-- B. Temperature -->
-    <section class="card" id="tempCard">
-      <h2><span class="ico">🌡️</span>Temperature</h2>
-      <div class="big"><span id="tempVal">--.-</span><small>°C</small></div>
-      <div class="badge" id="tempBadge">Waiting</div>
-      <div class="gauge"><div class="marker" id="tempMarker"></div></div>
-      <div class="scale"><span>30°</span><span>Target 37.5°</span><span>42°</span></div>
-      <div class="alert" id="tempAlert" hidden>Critical overheating. Check the heating light now.</div>
-      <p class="meta"><span class="src" id="tempSrc">-</span> Updated <span id="tempTime">-</span></p>
+  <div class="wrap">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <span class="logo"><svg class="i"><use href="#i-egg"/></svg></span>
+        <div><h1>Smart Egg Incubator</h1><p>Monitoring &amp; Control Dashboard</p></div>
+      </div>
+      <div class="header-right">
+        <span class="clock"><svg class="i"><use href="#i-clock"/></svg><span id="clock"></span></span>
+        <span class="pill off" id="connPill"><span class="dot"></span><span id="connText">Connecting</span></span>
+      </div>
+    </header>
+
+    <!-- Row 1: Temperature, Humidity, Heating light -->
+    <section class="row3">
+      <article class="card">
+        <h2><span class="ico"><svg class="i"><use href="#i-therm"/></svg></span>Temperature</h2>
+        <p class="desc">Current temperature inside the incubator</p>
+        <div class="big"><span id="tempVal">--.-</span><small>°C</small></div>
+        <span class="badge off" id="tempBadge">Waiting</span>
+        <div class="gauge" id="tempGauge"><i class="marker" id="tempMarker"></i></div>
+        <div class="scale"><span id="tLo"></span><span id="tempTarget"></span><span id="tHi"></span></div>
+        <div class="alert" id="tempAlert" hidden>Critical overheating. Check the heating light now.</div>
+        <p class="meta"><b id="tempSrc">-</b> Updated <span id="tempTime">-</span></p>
+      </article>
+
+      <article class="card">
+        <h2><span class="ico"><svg class="i"><use href="#i-drop"/></svg></span>Humidity</h2>
+        <p class="desc">Current humidity inside the incubator</p>
+        <div class="big"><span id="humVal">--</span><small>% RH</small></div>
+        <span class="badge off" id="humBadge">Waiting</span>
+        <div class="gauge" id="humGauge"><i class="marker" id="humMarker"></i></div>
+        <div class="scale"><span id="hLo"></span><span id="humTarget"></span><span id="hHi"></span></div>
+        <p class="meta"><b id="humSrc">-</b> Updated <span id="humTime">-</span></p>
+      </article>
+
+      <article class="card light">
+        <h2><span class="ico"><svg class="i"><use href="#i-bulb"/></svg></span>Heating Light</h2>
+        <p class="desc">Controls the incubator heating light</p>
+        <div class="bulb unk" id="bulbWrap"><svg class="i"><use href="#i-bulb"/></svg></div>
+        <div class="state" id="lightState">Unknown</div>
+        <button class="btn primary" id="lightBtn" disabled>Turn Light ON</button>
+        <p class="msg" id="lightMsg">Waiting for the incubator.</p>
+      </article>
     </section>
 
-    <!-- C. Heating light -->
-    <section class="card" id="lightCard">
-      <h2><span class="ico">💡</span>Heating Light</h2>
-      <svg class="bulb" id="bulb" viewBox="0 0 64 80">
-        <path d="M32 4a22 22 0 0 0-12 40c3 2 4 5 4 9h16c0-4 1-7 4-9A22 22 0 0 0 32 4z"/>
-        <rect x="23" y="56" width="18" height="6" rx="3"/><rect x="26" y="64" width="12" height="6" rx="3"/>
-      </svg>
-      <div class="light-state" id="lightState">Unknown</div>
-      <button class="toggle" id="lightBtn" disabled>Turn Light ON</button>
-      <p class="msg" id="lightMsg">Waiting for the incubator.</p>
-    </section>
-
-    <!-- D. Tracker -->
-    <section class="card" id="trackCard">
-      <h2><span class="ico">🥚</span>Incubation Tracker</h2>
-      <div class="big"><span id="dayVal">Day -</span></div>
+    <!-- Row 2: Incubation tracker -->
+    <section class="card tracker">
+      <div class="t-head">
+        <h2><span class="ico"><svg class="i"><use href="#i-cal"/></svg></span>Incubation Tracker</h2>
+        <span class="badge off" id="stInc">Not started</span>
+      </div>
+      <p class="desc">Tracks how many days the eggs have been in the incubator.</p>
+      <div class="t-day"><span class="day" id="dayVal">Not started</span><span class="of" id="dayOf"></span><span class="pct" id="progPct"></span></div>
       <div class="progress"><div id="progBar"></div></div>
-      <dl class="facts">
-        <div><dt>Started</dt><dd id="startTxt">Not started</dd></div>
-        <div><dt>Expected hatch</dt><dd id="hatchTxt">-</dd></div>
-        <div><dt>Days left</dt><dd id="leftTxt">-</dd></div>
-        <div><dt>Duration</dt><dd><input type="number" id="durInput" min="1" max="60" value="21"> days</dd></div>
-      </dl>
-      <div class="row">
-        <input type="date" id="startInput">
-        <button class="btn" id="setStart">Save start date</button>
+      <div class="tiles">
+        <div><span>Start date</span><b id="startTxt">Not started</b></div>
+        <div><span>Expected hatch</span><b id="hatchTxt">-</b></div>
+        <div><span>Days remaining</span><b id="leftTxt">-</b></div>
+        <div><span>Duration</span><b><input type="number" id="durInput" min="1" max="60" value="21"> days</b></div>
+      </div>
+      <div class="t-ctrl">
+        <label>Start date <input type="date" id="startInput"></label>
+        <button class="btn primary" id="setStart">Save start date</button>
         <button class="btn ghost" id="newCycle">Start new cycle</button>
       </div>
     </section>
 
-    <!-- E. Humidity -->
-    <section class="card" id="humCard">
-      <h2><span class="ico">💧</span>Humidity</h2>
-      <div class="big"><span id="humVal">--</span><small>% RH</small></div>
-      <div class="badge" id="humBadge">Waiting</div>
-      <div class="gauge hum"><div class="marker" id="humMarker"></div></div>
-      <div class="scale"><span>0%</span><span>Ideal 50-60%</span><span>100%</span></div>
-      <p class="meta"><span class="src" id="humSrc">-</span> Updated <span id="humTime">-</span></p>
-    </section>
+    <!-- Row 3: History + status -->
+    <section class="row2">
+      <article class="card">
+        <h2><span class="ico"><svg class="i"><use href="#i-trend"/></svg></span>Temperature History
+          <span class="badge off" id="chartSrcBadge">Source: <span id="chartSrc">-</span></span></h2>
+        <p class="desc">Last 30 minutes. History starts when this page is opened.</p>
+        <svg id="chart" viewBox="0 0 640 220" role="img" aria-label="Temperature history chart"></svg>
+      </article>
 
-    <!-- F. System status -->
-    <section class="card status" id="statusCard">
-      <h2><span class="ico">📋</span>System Status</h2>
-      <ul>
-        <li><span>Arduino connection</span><b id="stConn">-</b></li>
-        <li><span>Temperature sensor</span><b id="stSensor">-</b></li>
-        <li><span>Heating light</span><b id="stLight">-</b></li>
-        <li><span>Incubation</span><b id="stInc">-</b></li>
-        <li><span>Last sensor update</span><b id="stTime">-</b></li>
-      </ul>
+      <article class="card">
+        <h2><span class="ico"><svg class="i"><use href="#i-wifi"/></svg></span>System Status</h2>
+        <ul class="status">
+          <li data-s="off"><span class="dot"></span><span>Arduino connection</span><b id="stConn">-</b></li>
+          <li data-s="off"><span class="dot"></span><span>Temperature sensor</span><b id="stSensor">-</b></li>
+          <li data-s="off"><span class="dot"></span><span>Humidity sensor</span><b id="stHum">-</b></li>
+          <li data-s="off"><span class="dot"></span><span>Heating light</span><b id="stLight">-</b></li>
+          <li data-s="off"><span class="dot"></span><span>Last sensor update</span><b id="stTime">-</b></li>
+        </ul>
+      </article>
     </section>
-  </main>
+  </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
